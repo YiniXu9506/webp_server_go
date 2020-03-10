@@ -41,7 +41,7 @@ func Convert(ImgPath string, ExhaustPath string, allowMap map[string]bool, QUALI
 			allowed = false
 		}
 
-		chk, info := ImageExists(RawImageAbs)
+		chk, unix := ImageExists(RawImageAbs)
 		if !allowed {
 			msg := "File extension not allowed! " + ImgFilename
 			log.Warn(msg)
@@ -61,7 +61,7 @@ func Convert(ImgPath string, ExhaustPath string, allowMap map[string]bool, QUALI
 			return
 		}
 
-		_, WebpAbsPath := GenWebpAbs(RawImageAbs, ExhaustPath, ImgFilename, reqURI, info)
+		_, WebpAbsPath := GenWebpAbs(RawImageAbs, ExhaustPath, ImgFilename, reqURI, unix)
 		chk, _ = ImageExists(WebpAbsPath)
 		if chk {
 			finalFile = WebpAbsPath

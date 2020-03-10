@@ -34,22 +34,24 @@ func FileCount(dir string) int {
 	return count
 }
 
-func ImageExists(filename string) bool {
+func ImageExists(filename string) (bool, os.FileInfo) {
+	log.Debugf("Checking if %s exists...", filename)
 	info, err := os.Stat(filename)
 	if os.IsNotExist(err) {
-		return false
+		return false, nil
 	}
 	log.Debugf("file %s exists!", filename)
-	return !info.IsDir()
+	return !info.IsDir(), info
 }
 
-func GenWebpAbs(RawImagePath string, ExhaustPath string, ImgFilename string, reqURI string) (string, string) {
+func GenWebpAbs(RawImagePath string, ExhaustPath string,
+	ImgFilename string, reqURI string, stat os.FileInfo) (string, string) {
 	// get file mod time
-	STAT, err := os.Stat(RawImagePath)
-	if err != nil {
-		log.Error(err.Error())
+	if stat == nil {
+		stat, _ = os.Stat(RawImagePath)
 	}
-	ModifiedTime := STAT.ModTime().Unix()
+
+	ModifiedTime := stat.ModTime().Unix()
 	// webpFilename: abc.jpg.png -> abc.jpg.png1582558990.webp
 	var WebpFilename = fmt.Sprintf("%s.%d.webp", ImgFilename, ModifiedTime)
 	cwd, _ := os.Getwd()

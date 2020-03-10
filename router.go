@@ -41,18 +41,19 @@ func Convert(ImgPath string, ExhaustPath string, AllowedTypes []string, QUALITY 
 				allowed = false
 			}
 		}
+		chk, info := ImageExists(RawImageAbs)
 		if !allowed {
 			msg := "File extension not allowed! " + ImgFilename
 			log.Warn(msg)
 			c.Send(msg)
-			if ImageExists(RawImageAbs) {
+			if chk {
 				c.SendFile(RawImageAbs)
 			}
 			return
 		}
 
 		// Check the original image for existence,
-		if !ImageExists(RawImageAbs) {
+		if !chk {
 			msg := "Image not found!"
 			c.Send(msg)
 			log.Warn(msg)
@@ -60,9 +61,9 @@ func Convert(ImgPath string, ExhaustPath string, AllowedTypes []string, QUALITY 
 			return
 		}
 
-		_, WebpAbsPath := GenWebpAbs(RawImageAbs, ExhaustPath, ImgFilename, reqURI)
-
-		if ImageExists(WebpAbsPath) {
+		_, WebpAbsPath := GenWebpAbs(RawImageAbs, ExhaustPath, ImgFilename, reqURI, info)
+		chk, _ = ImageExists(WebpAbsPath)
+		if chk {
 			finalFile = WebpAbsPath
 		} else {
 			// we don't have abc.jpg.png1582558990.webp

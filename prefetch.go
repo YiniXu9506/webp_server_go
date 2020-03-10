@@ -35,7 +35,7 @@ it may take some time and consume a lot of CPU resource. Do you want to proceed(
 				}
 				// RawImagePath string, ImgFilename string, reqURI string
 				proposedURI := strings.Replace(picAbsPath, confImgPath, "", 1)
-				_, p2 := GenWebpAbs(picAbsPath, ExhaustPath, info.Name(), proposedURI)
+				_, p2 := GenWebpAbs(picAbsPath, ExhaustPath, info.Name(), proposedURI, nil)
 				q, _ := strconv.ParseFloat(QUALITY, 32)
 				_ = os.MkdirAll(path.Dir(p2), 0755)
 				go WebpEncoder(picAbsPath, p2, float32(q), false, finishChan)

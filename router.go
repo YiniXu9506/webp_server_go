@@ -11,7 +11,7 @@ import (
 	"github.com/gofiber/fiber"
 )
 
-func Convert(ImgPath string, ExhaustPath string, AllowedTypes []string, QUALITY string) func(c *fiber.Ctx) {
+func Convert(ImgPath string, ExhaustPath string, allowMap map[string]bool, QUALITY string) func(c *fiber.Ctx) {
 	return func(c *fiber.Ctx) {
 		//basic vars
 		var reqURI = c.Path()                        // mypic/123.jpg
@@ -28,19 +28,19 @@ func Convert(ImgPath string, ExhaustPath string, AllowedTypes []string, QUALITY 
 		}
 		log.Debugf("Incoming connection from %s@%s with %s", UA, c.IP(), ImgFilename)
 
-		// check ext
+		// check ext in dict
 		// TODO: may remove this function. Check in Nginx.
+		extension := strings.Split(ImgFilename, ".")[1]
 		var allowed = false
-		for _, ext := range AllowedTypes {
-			haystack := strings.ToLower(ImgFilename)
-			needle := strings.ToLower("." + ext)
-			if strings.HasSuffix(haystack, needle) {
-				allowed = true
-				break
-			} else {
-				allowed = false
-			}
+		if ok, _ := allowMap[extension]; !ok {
+
 		}
+		if _, ok := allowMap[extension]; ok {
+			allowed = true
+		} else {
+			allowed = false
+		}
+
 		chk, info := ImageExists(RawImageAbs)
 		if !allowed {
 			msg := "File extension not allowed! " + ImgFilename

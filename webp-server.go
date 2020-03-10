@@ -4,12 +4,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/gofiber/fiber"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"path"
 	"runtime"
-
-	"github.com/gofiber/fiber"
-	log "github.com/sirupsen/logrus"
 )
 
 type Config struct {
@@ -122,12 +121,16 @@ func main() {
 	PORT := config.PORT
 	confImgPath := path.Clean(config.ImgPath)
 	QUALITY := config.QUALITY
-	AllowedTypes := config.AllowedTypes
 	var ExhaustPath string
 	if len(config.ExhaustPath) == 0 {
 		ExhaustPath = "./exhaust"
 	} else {
 		ExhaustPath = config.ExhaustPath
+	}
+
+	var allowMap = make(map[string]bool)
+	for _, ext := range config.AllowedTypes {
+		allowMap[ext] = true
 	}
 
 	if prefetch {
@@ -143,7 +146,7 @@ func main() {
 	// Server Info
 	log.Infof("WebP Server %s %s", version, ListenAddress)
 
-	app.Get("/*", Convert(confImgPath, ExhaustPath, AllowedTypes, QUALITY))
+	app.Get("/*", Convert(confImgPath, ExhaustPath, allowMap, QUALITY))
 	app.Listen(ListenAddress)
 
 }
